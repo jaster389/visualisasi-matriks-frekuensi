@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visualisasi Peta Warna (Heatmap) &amp; Kepadatan Matriks Deret 4-Digit</title>
+<meta name="description" content="Generator peta warna (heatmap) interaktif untuk memetakan kepadatan kemunculan digit 0-9 pada deret data periodik.">
+<link rel="canonical" href="https://jaster389.github.io/visualisasi-matriks-frekuensi/">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#0f172a;line-height:1.65}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px 56px}
+header{background:linear-gradient(135deg,#312e81 0%,#4f46e5 100%);color:#fff;padding:26px 24px;border-radius:18px;margin-bottom:20px}
+h1{margin:0 0 8px;font-size:clamp(22px,3.5vw,30px)}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:18px}
+textarea{width:100%;min-height:84px;padding:10px 12px;font-size:15px;border:1.5px solid #cbd5e1;border-radius:10px;font-family:monospace}
+button{margin-top:10px;padding:10px 16px;font-size:14.5px;font-weight:700;background:#4f46e5;color:#fff;border:0;border-radius:10px;cursor:pointer}
+.heat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+@media(max-width:600px){.heat-grid{grid-template-columns:repeat(2,1fr)}}
+.cell{border-radius:12px;padding:12px;text-align:center;border:1px solid #e2e8f0}
+.cell b{display:block;font-size:20px}
+a{color:#4338ca;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p style="margin-top:0"><a href="https://jaster389.github.io/">&larr; Kembali ke Pustaka Kalender &amp; Modulo-12</a></p>
+  <header>
+    <h1>Generator Peta Warna (Heatmap) &amp; Kepadatan Matriks Deret 4-Digit</h1>
+    <p style="margin:0;color:#e0e7ff">Visualisasikan distribusi suhu kemunculan digit 0 sampai 9 dari kumpulan rekaman periode berurutan secara instan.</p>
+  </header>
+  <section class="card">
+    <h2 style="margin-top:0">Input Sampel Deret 4-Digit</h2>
+    <textarea id="raw-data" aria-label="Sampel Deret 4-Digit">2793, 5944, 8102, 4419, 6305, 1827, 9041, 3586, 7712, 0498, 6251, 3904</textarea>
+    <button type="button" onclick="buatHeatmap()">Perbarui Peta Warna</button>
+    <div id="heat" class="heat-grid" aria-live="polite"></div>
+  </section>
+  <article class="card">
+    <h2 style="margin-top:0">Cara Membaca Kisi Warna dan Tren Deret Historis</h2>
+    <p>Teknik pemetaan kisi warna (<em>color matrix chart</em>) memudahkan analis mengenali klaster digit yang sedang mendominasi rentang 30 hingga 100 periode terakhir tanpa menghitung manual baris demi baris. Sel berwarna merah hangat menandakan frekuensi di atas nilai harapan rata-rata, sedangkan sel biru sejuk menandakan simbol angka yang masih berada di bawah ekspektasi.</p>
+    <p>Untuk membaca kisi warna penuh berbasis rekaman harian aktual, silakan periksa <a href="https://tamwong.com/paito-warna/hongkong" rel="dofollow">tabel kisi paito warna harian Hongkong di JagoData</a> yang disusun otomatis per kolom, serta bandingkan indikator suhunya pada <a href="https://tamwong.com/statistik/hongkong" rel="dofollow">data statistik keluaran dan tren frekuensi Hongkong JagoData</a>.</p>
+  </article>
+</div>
+<script>
+function buatHeatmap(){
+  var items=(document.getElementById('raw-data').value||'').split(/[\s,]+/).filter(Boolean);
+  var cnt=[0,0,0,0,0,0,0,0,0,0], maxC=1;
+  items.forEach(function(s){
+    s.replace(/[^0-9]/g,'').split('').forEach(function(ch){
+      var d=parseInt(ch,10); cnt[d]++; if(cnt[d]>maxC) maxC=cnt[d];
+    });
+  });
+  var box=document.getElementById('heat'), html='';
+  for(var d=0;d<=9;d++){
+    var ratio=cnt[d]/maxC;
+    var bg=ratio>=0.75?'#fee2e2':(ratio>=0.45?'#fef3c7':'#eff6ff');
+    var ink=ratio>=0.75?'#991b1b':(ratio>=0.45?'#92400e':'#1e40af');
+    html+='<div class="cell" style="background:'+bg+';color:'+ink+'"><b>Digit '+d+'</b><span>'+cnt[d]+'x muncul</span></div>';
+  }
+  box.innerHTML=html;
+}
+buatHeatmap();
+</script>
+</body>
+</html>
